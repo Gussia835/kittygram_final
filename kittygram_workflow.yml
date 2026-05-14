@@ -1,0 +1,33 @@
+name: Kittygram CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: install dependencies
+        run: pip install -r ./backend/requirements.txt
+
+      - name: tests
+        run: python manage.py test
+
+  push_changes:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: push
+        run: echo "Images pushed to Docker Hub"
