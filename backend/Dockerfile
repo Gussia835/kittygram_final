@@ -2,12 +2,20 @@ FROM python:3.10
 
 WORKDIR /app
 
+RUN pip install --upgrade pip
 RUN pip install gunicorn==20.1.0
 
 COPY requirements.txt .
-
 RUN pip install -r requirements.txt --no-cache-dir
 
 COPY . .
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "backend.wsgi"]
+ENV PYTHONPATH=/app
+
+RUN python manage.py migrate --noinput || echo "Migration skipped"
+
+RUN python manage.py collectstatic --noinput || echo "Collectstatic skipped"
+
+EXPOSE 10000
+
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:$PORT --pythonpath /app kittygram_backend.wsgi:application"]
